@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <style>
+        body {
+            background-color: rgb(23, 20, 20);
+        }
+        .overall {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 13%;
+            flex-wrap: wrap;
+            margin-right: 30px;
+        }
+        .container {
+            border: 5px solid yellow;
+            box-shadow: 0 0 40px yellow;
+            font-size: 21px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: whitesmoke;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            margin-bottom: 6%;
+        }
+        .buttons {
+            margin-top: 50px;
+            justify-content: center;
+            margin-bottom: 1%;
+            background-color: yellow;
+            border: 5px solid yellow;
+            width: 200px;
+            height: 40px;
+            text-align: center;
+            padding-top: 0px;
+            color: black;
+            font-size: 35px;
+            transition: font-size 0.3s, box-shadow 0.3s;
+            border-radius: 15px;
+        }
+        .buttons:hover {
+            font-size: 33px;
+            box-shadow: 0 0 20px yellow;
+        }
+        input[type='number'] {
+            width: 100px;
+            background-color: yellow;
+            height: 30px;
+            font-size: 20px;
+            margin-bottom: 2%;
+        }
+        h2 {
+            font-size: 30px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            letter-spacing: 5px;
+            word-spacing: 10px;
+        }
+        .set-time {
+            margin-top: 50px;
+            width: 350px;
+            height: 180px;
+            text-align: center;
+            color: whitesmoke;
+            border: 2px solid yellow;
+        }
+        button {
+            width: 100px;
+            height: 30px;
+            font-size: 20px;
+            background-color: yellow;
+            border-radius: 10px;
+            margin-top: 5px;
+            transition: width 0.5s, font-size 0.5s, box-shadow 0.5s, height 0.5s;
+        }
+        button:hover {
+            background-color: yellow;
+            box-shadow: 0 0 20px yellow;
+            border: 1px solid yellow;
+            height: 32px;
+            width: 120px;
+            font-size: 21px;
+        }
+        @media screen and (max-width:480px){
+            .overall {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 0%;
+            flex-wrap: wrap;
+            margin-right: 0px;
+        }
+        input[type='number'] {
+            width: 80px;
+            background-color: yellow;
+            height: 30px;
+            font-size: 20px;
+            margin-bottom: 2%;
+        }
+        .set-time {
+            margin-top: 0px;
+            width: 350px;
+            height: 180px;
+            text-align: center;
+            color: whitesmoke;
+            border: 2px solid yellow;
+        }
+        .buttons {
+            margin-top: 20px;
+            justify-content: center;
+            margin-bottom: 1%;
+            background-color: yellow;
+            border: 5px solid yellow;
+            width: 200px;
+            height: 40px;
+            text-align: center;
+            padding-top: 0px;
+            color: black;
+            font-size: 35px;
+            transition: font-size 0.3s, box-shadow 0.3s;
+            border-radius: 15px;
+        }
+        .container {
+            border: 5px solid yellow;
+            box-shadow: 0 0 40px yellow;
+            font-size: 21px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: whitesmoke;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            margin-bottom: 6%;
+            margin-top: 10%;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="overall">
+        <div class="set-time">
+            <h2>ENTER TIME</h2>
+            <input type="number" min="0" max="12" required placeholder="Hours" id="hour">
+            <input type="number" min="0" max="60" required placeholder="Minutes" id="mins">
+            <input type="number" min="0" max="60" required placeholder="Seconds" id="secs">
+            <button onclick="showtime()">Set Time</button>
+        </div>
+        <div class="container">
+            <h1 id="time_on_circle">00 : 00 : 00</h1>
+        </div>
+        <div class="opt">
+            <div class="buttons" onclick="start()">Start</div>
+            <div class="buttons" onclick="stop()">Stop</div>
+        </div>
+    </div>
+    <audio id="alarm-sound" src="MV27TES-alarm.mp3" preload="auto"></audio>
+    <script>
+        let timer;
+        let totalSeconds;
+
+        function showtime() {
+            let hours = parseInt(document.getElementById('hour').value) || 0;
+            let minutes = parseInt(document.getElementById('mins').value) || 0;
+            let seconds = parseInt(document.getElementById('secs').value) || 0;
+            totalSeconds = hours * 3600 + minutes * 60 + seconds;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            let hours = Math.floor(totalSeconds / 3600);
+            let minutes = Math.floor((totalSeconds % 3600) / 60);
+            let seconds = totalSeconds % 60;
+
+            document.getElementById('time_on_circle').innerText =
+                `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+        }
+
+        function start() {
+            if (timer) return; // Prevent multiple intervals
+            timer = setInterval(() => {
+                if (totalSeconds > 0) {
+                    totalSeconds--;
+                    updateDisplay();
+                } else {
+                    clearInterval(timer);
+                    timer = null;
+                    document.getElementById('alarm-sound').play();
+                }
+            }, 1000);
+        }
+
+        function stop() {
+            clearInterval(timer);
+            timer = null;
+        }
+    </script>
+</body>
+</html>
